@@ -1,3 +1,4 @@
+import React from 'react'
 import makeStyles from "./styles";
 import {
   Card,
@@ -17,8 +18,9 @@ import { useState } from "react";
 const Post = (props) => {
   const dispatch = useDispatch()
   const classes = makeStyles();
+  const user = JSON.parse(localStorage.getItem('profile'));
   // console.log('reached here')
-  const [likeCount,setLikeCount] = useState(props.post.likeCount)
+  // const [likeCount,setLikeCount] = useState(props.post.likeCount)
   return (
     <Card className={classes.card}>
       <CardMedia
@@ -27,15 +29,16 @@ const Post = (props) => {
         title={props.post.title}
       />
       <div className={classes.overlay}>
-        <Typography variant="h6">{props.post.creator}</Typography>
+        <Typography variant="h6">{props.post.name}</Typography>
         <Typography variant="body2">
           {moment(props.post.createdAt).fromNow()}
         </Typography>
       </div>
       <div className={classes.overlay2}>
+      {(user?.result?.googleId === props.post?.creator || user?.result?._id===props.post?.creator) &&
         <Button style={{ color: "white" }} size="small" onClick={() => props.setCurrentId(props.post._id)}>
           <MoreHorizIcon fontSize="medium" />
-        </Button>
+        </Button>}
       </div>
       <div className={classes.details}>
         <Typography variant="body2" color="textSecondary">
@@ -51,16 +54,17 @@ const Post = (props) => {
         </Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
-        <Button size="small" color="primary" onClick={() => {dispatch(likePost(props.post._id));setLikeCount(likeCount+1)}}>
+        <Button size="small" color="primary" disabled ={!user?.result}onClick={() => {dispatch(likePost(props.post._id))}}>
           <ThumbUpAltIcon fontSize="small" />
-          {!likeCount?'Like':likeCount}
-          {console.log(likeCount)}
+          {!props.post.likes.length?'Like':props.post.likes.length}
+          {/* {console.log(likeCount)} */}
           
         </Button>
+        {(user?.result?.googleId === props.post?.creator || user?.result?._id===props.post?.creator) &&
         <Button size="small" color="primary" onClick={() => dispatch(deletePost(props.post._id))}>
           <DeleteIcon fontSize="small" />
           Delete
-        </Button>
+        </Button>}
       </CardActions>
     </Card>
   );
